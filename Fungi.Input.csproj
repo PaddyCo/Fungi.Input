@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="Axis.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

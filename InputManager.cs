@@ -8,13 +8,18 @@ namespace Fungi.Input
     public class InputManager
     {
         private List<Action> actions;
+        private List<Axis> axes;
         private PlayerIndex playerIndex;
+        private Vector2? mouseLockPosition;
 
         private KeyboardState currentKeyboardState;
+        private MouseState currentMouseState;
+        private Vector2 currentMouseDeltaPosition;
         private GamePadState currentGamePadState;
         private Dictionary<string, float> currentActionPressDurations;
         private List<string> actionsPressedThisUpdate;
         private List<string> actionsReleasedThisUpdate;
+        private Vector2 mousePositionLastUpdate;
 
         /// <summary>
         /// Initializes the input manager for one player.
@@ -24,6 +29,7 @@ namespace Fungi.Input
         {
             this.playerIndex = playerIndex;
             actions = new List<Action>();
+            axes = new List<Axis>();
             currentActionPressDurations = new Dictionary<string, float>();
         }
 
@@ -47,6 +53,11 @@ namespace Fungi.Input
             GetAction(actionName).Bind(button);
         }
 
+        public void BindAxis(string axisName, AxisType axisType)
+        {
+            GetAxisBind(axisName).SetAxisType(axisType);
+        }
+
         /// <summary>
         /// This gets the latest keyboard and game pad state, run this every tick before checking inputs!
         /// </summary>
@@ -55,6 +66,7 @@ namespace Fungi.Input
             // Get the current state
             currentKeyboardState = Keyboard.GetState();
             currentGamePadState = GamePad.GetState(playerIndex);
+            currentMouseState = Mouse.GetState();
 
             // Clear just pressed/released lists
             actionsPressedThisUpdate = new List<string>();
@@ -82,6 +94,34 @@ namespace Fungi.Input
                     currentActionPressDurations.Remove(action.Name);
                 }
             }
+
+            // Calculate mouse delta position
+            if (mousePositionLastUpdate != null)
+            {
+                currentMouseDeltaPosition = currentMouseState.Position.ToVector2() - mousePositionLastUpdate;
+            }
+
+            if (mouseLockPosition.HasValue)
+            {
+                Mouse.SetPosition((int)mouseLockPosition.Value.X, (int)mouseLockPosition.Value.Y);
+                mousePositionLastUpdate = mouseLockPosition.Value;
+            }
+            else
+            {
+                mousePositionLastUpdate = currentMouseState.Position.ToVector2();
+            }
+
+        }
+
+
+        public void LockMouse(Vector2 mousePosition)
+        {
+            mouseLockPosition = mousePosition;
+        }
+
+        public void UnlockMouse()
+        {
+            mouseLockPosition = null;
         }
 
 
@@ -135,6 +175,11 @@ namespace Fungi.Input
             return actionsReleasedThisUpdate.Contains(actionName);
         }
 
+        public float GetAxis(string axisName)
+        {
+            return GetAxisBind(axisName).GetValue(currentMouseDeltaPosition, currentGamePadState);
+        }
+
         /// <summary>
         /// This will get the action with the specified name, and if none exist, simply create a new one.
         /// </summary>
@@ -151,6 +196,19 @@ namespace Fungi.Input
             }
 
             return action;
+        }
+
+        private Axis GetAxisBind(string axisName)
+        {
+            var axis = axes.Find((a) => a.Name == axisName);
+
+            if (axis == null)
+            {
+                axis = new Axis(axisName);
+                axes.Add(axis);
+            }
+
+            return axis;
         }
     }
 }
