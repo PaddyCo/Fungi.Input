@@ -20,7 +20,7 @@ namespace Fungi.Input
 
         public void Bind(Keys key)
         {
-            if (boundKeys.FindIndex((k) => k == key) == -1)
+            if (!boundKeys.Contains(key))
             {
                 boundKeys.Add(key);
             }
@@ -28,7 +28,7 @@ namespace Fungi.Input
 
         public void Bind(Buttons button)
         {
-            if (boundButtons.FindIndex((b) => b == button) == -1)
+            if (!boundButtons.Contains(button))
             {
                 boundButtons.Add(button);
             }
