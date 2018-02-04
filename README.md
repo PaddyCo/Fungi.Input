@@ -13,7 +13,7 @@ For example, walking with a D-pad or the arrow keys on a keyboard are usually ma
 
 ```csharp
 inputManager.Bind("Punch", Keys.P);    // You can bind keyboard keys...
-inputManager.Bind("Punch", Buttons.A); // ... game pad buttons
+inputManager.Bind("Punch", Buttons.A); // ... or game pad buttons
 ```
 
 Note that you can bind multiple keys and buttons to the same action
@@ -98,10 +98,10 @@ namespace HelloWorld
         {
             // ...
 
-			// Bind actions and axes here (or wherever you feel like)
+            // Bind actions and axes here (or wherever you feel like)
             inputManager.Bind("Punch", Keys.P); 
-            inputManager.BindAxis("Lean", AxisType.LeftThumbStickX); // You can bind thumb sticks...
-
+            inputManager.BindAxis("Lean", AxisType.LeftThumbStickX);
+	    
             // ...
         }
 
@@ -117,7 +117,7 @@ namespace HelloWorld
                 Console.WriteLine("You punch and punch and punch!");
             }
 
-			Console.WriteLine($"Leaning: {inputManager.GetAxis("Lean")}"); // Thumb stick axes are always between -1.0 and 1.0
+            Console.WriteLine($"Leaning: {inputManager.GetAxis("Lean")}"); // Thumb stick axes are always between -1.0 and 1.0
 
             // ...
         }
